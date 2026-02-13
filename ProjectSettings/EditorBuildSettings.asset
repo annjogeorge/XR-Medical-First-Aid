@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/roadscene.unity
+    guid: 66ab8d8d913a28944bd49525b0163568
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 186c02bde8032694db04435928d1109d,
       type: 2}
