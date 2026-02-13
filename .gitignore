@@ -1,13 +1,17 @@
+<<<<<<< HEAD
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 .utmp/
+=======
+>>>>>>> 0490d6b (cpr)
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+<<<<<<< HEAD
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
@@ -97,3 +101,11 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+=======
+/Logs/
+/UserSettings/
+*.sln
+*.csproj
+*.unityproj
+.vs/
+>>>>>>> 0490d6b (cpr)
