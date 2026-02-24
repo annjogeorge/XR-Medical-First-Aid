@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 using System.Collections;
-using System.Collections.Generic; // Added for smoothing list
+using System.Collections.Generic;
 
 public class CPRCompressionLogic : MonoBehaviour
 {
@@ -14,7 +14,7 @@ public class CPRCompressionLogic : MonoBehaviour
     public GameObject infoPanel;
 
     [Header("Placement UI")]
-    public GameObject placementImage;//
+    public GameObject placementImage;
 
     [Header("References")]
     public Transform surfaceRef;
@@ -27,7 +27,7 @@ public class CPRCompressionLogic : MonoBehaviour
     [Header("Compression Settings")]
     public float targetDepth = 0.05f;
     public float releasePoint = 0.01f;
-    public float minTimeBetweenCompressions = 0.25f; // Prevents "700 BPM" spikes
+    public float minTimeBetweenCompressions = 0.25f;
 
     private int compressionCount = 0;
     private bool isPushing = false;
@@ -38,7 +38,6 @@ public class CPRCompressionLogic : MonoBehaviour
     private int sessionTimeRemaining = 60;
     private bool sessionFinished = false;
 
-    // For BPM Smoothing
     private List<float> compressionTimes = new List<float>();
 
     void Start()
@@ -55,23 +54,27 @@ public class CPRCompressionLogic : MonoBehaviour
         // Calculate depth (Positive value means pushing down)
         float currentDepth = surfaceRef.position.y - hand.transform.position.y;
 
-        // 1. DETECTION LOGIC
-        // Check if we hit depth AND enough time has passed since the last one
-        if (currentDepth >= targetDepth && !isPushing && (Time.time - lastCompressionTime) > minTimeBetweenCompressions)
+        // 1. DETECTION LOGIC (The Downward Push)
+        // Corrected: Only count if we aren't already marked as 'isPushing'
+        if (currentDepth >= targetDepth && !isPushing)
         {
-            compressionCount++;
-            isPushing = true;
+            if ((Time.time - lastCompressionTime) > minTimeBetweenCompressions)
+            {
+                compressionCount++;
+                isPushing = true; // LOCK: Prevents counting again until releasePoint is hit
 
-            RegisterCompression();
-            UpdateUI();
+                RegisterCompression();
+                UpdateUI();
 
-            if (chestRenderer) chestRenderer.material.color = Color.blue;
+                if (chestRenderer) chestRenderer.material.color = Color.blue;
+            }
         }
 
-        // 2. RELEASE LOGIC
-        if (currentDepth < releasePoint && isPushing)
+        // 2. RELEASE LOGIC (The Upward Lift)
+        // Reset the lock only when the hand is lifted back near the surface
+        if (currentDepth <= releasePoint && isPushing)
         {
-            isPushing = false;
+            isPushing = false; // UNLOCK: Ready for the next compression
             if (chestRenderer) chestRenderer.material.color = Color.green;
         }
 
@@ -103,10 +106,8 @@ public class CPRCompressionLogic : MonoBehaviour
 
     private void CalculateSmoothedBPM(float lastTimeDiff)
     {
-        // Add current interval to list
         compressionTimes.Add(60f / lastTimeDiff);
 
-        // Keep only the last 5 compressions for a rolling average
         if (compressionTimes.Count > 5) compressionTimes.RemoveAt(0);
 
         float sum = 0;
@@ -115,13 +116,10 @@ public class CPRCompressionLogic : MonoBehaviour
 
         if (bpmText != null) bpmText.text = "BPM: " + averageBPM.ToString("F0");
 
-        // Feedback Logic
         if (averageBPM < 100) feedbackText.text = "Push Faster!";
         else if (averageBPM > 120) feedbackText.text = "Too Fast!";
         else feedbackText.text = "Perfect Pace!";
     }
-
-    // ... [Keep your StartCPRSession, MetronomeLoop, and Trigger methods the same] ...
 
     IEnumerator StartCPRSession()
     {
