@@ -109,3 +109,19 @@ InitTestScene*.unity*
 *.unityproj
 .vs/
 >>>>>>> 0490d6b (cpr)
+# Ignore Python virtual environments
+Python_CV/cpr_stable/bin/
+Python_CV/cpr_stable/lib/
+Python_CV/cpr_stable/include/
+Python_CV/cpr_stable/share/
+Python_CV/cpr_stable/pyvenv.cfg
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Unity Temp files (if not already ignored)
+Library/
+Temp/
+Obj/
+Build/
