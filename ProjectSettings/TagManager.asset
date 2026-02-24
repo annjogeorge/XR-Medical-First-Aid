@@ -8,6 +8,10 @@ TagManager:
   - LeftHand
   - Chest
   - PlayerHand
+  - Water
+  - Gauze
+  - Ointment
+  - BandageRoll
   layers:
   - Default
   - TransparentFX
