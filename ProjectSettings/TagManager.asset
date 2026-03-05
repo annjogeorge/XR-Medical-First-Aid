@@ -8,15 +8,21 @@ TagManager:
   - LeftHand
   - Chest
   - PlayerHand
+  - BurnArea
+  - WaterStream
+  - GauzeRoll
+  - Water
+  - FxTemporaire
+  - Patient
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PatientBody
   - Water
   - UI
-  - 
-  - 
+  - MedicalEquipment
+  - Decal
   - 
   - 
   - 
