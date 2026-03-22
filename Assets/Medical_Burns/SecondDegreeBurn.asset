@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c08442c47dd6244b99824e1db4ab624, type: 3}
+  m_Name: SecondDegreeBurn
+  m_EditorClassIdentifier: 
+  burnDegree: Second Degree
+  burnCause: Thermal Contact
+  whatItLooks: Blisters, moist red skin, wet appearance.
+  causes: Scalding water, flames, chemical contact.
+  symptoms: Severe pain, swelling, fluid-filled blisters.
+  emergency: Call 999 if larger than the palm of your hand.
+  annotations: []
+  treatmentSteps:
+  - title: Remove Accessories
+    instruction: Remove any watches or jewellery near the burn
+    stepType: 0
+  - title: Cool the Burn
+    instruction: Run cool water over the burn for 20 minutes
+    stepType: 1
+  - title: Cover the Burn
+    instruction: Pick up the bandage and wrap around the burn
+    stepType: 6
+  decalMaterial: {fileID: 2100000, guid: 3c4422f2b4d12a64384b2fd734ab9a56, type: 2}
+  requiresImmediate999: 0

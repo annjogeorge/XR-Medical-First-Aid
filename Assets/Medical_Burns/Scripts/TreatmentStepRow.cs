@@ -37,6 +37,11 @@ public class TreatmentStepRow : MonoBehaviour
             rowBackground.DOColor(new Color(0.20f, 0.55f, 0.90f, 0.12f), 0.3f);
         transform.DOPunchScale(Vector3.one * 0.05f, 0.3f, 3, 0.5f);
     }
+    public void UpdateLabel(string label)
+    {
+        if (stepLabel != null)
+            stepLabel.text = label;
+    }
 
     public void MarkComplete()
     {

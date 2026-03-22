@@ -16,6 +16,19 @@ public class UIAnimator : MonoBehaviour
     public RectTransform panelRect;
     public Image panelBackground;
 
+    [Header("Camera Zoom")]
+    public Transform xrOrigin;
+    public Transform viewPoint;        // empty GameObject positioned in front of panel
+    public float zoomDuration = 1.2f;
+    public Ease zoomEase = Ease.InOutSine;
+    public float returnDuration = 0.4f;
+    public Ease returnEase = Ease.InOutSine;
+    public float pullBackDistance = 0.5f;
+
+    private Vector3 _originStartPos;
+    private Quaternion _originStartRot;
+    private bool _isZoomed = false;
+
     [Header("Text Fields")]
     public TextMeshProUGUI degreeText;
     public TextMeshProUGUI causeText;
@@ -52,20 +65,16 @@ public class UIAnimator : MonoBehaviour
     private List<LineRenderer> _activeLines = new List<LineRenderer>();
     private List<RectTransform> _activeRows = new List<RectTransform>();
 
+    private Vector3 _originalScale;
+
     void Awake()
     {
-        transform.localScale = Vector3.zero;
+        _originalScale = transform.localScale; // save YOUR scale first
+        transform.localScale = Vector3.zero;   // then zero for animation
         if (canvasGroup != null) canvasGroup.alpha = 0f;
-        ApplyColors();
     }
 
-    void ApplyColors()
-    {
-        if (panelBackground != null) panelBackground.color = panelColor;
-        if (degreeText != null) degreeText.color = headerColor;
-        if (causeText != null) causeText.color = subTextColor;
-        if (descriptionText != null) descriptionText.color = bodyTextColor;
-    }
+
 
     // ─── Public API ───────────────────────────────────────────────────────────
 
@@ -75,14 +84,20 @@ public class UIAnimator : MonoBehaviour
         _isVisible = true;
         _currentData = data;
 
+
+        ZoomIn();
+
         if (degreeText != null) degreeText.text = data.burnDegree.ToUpper() + " BURN";
         if (causeText != null) causeText.text = data.burnCause;
         if (descriptionText != null) descriptionText.text = "";
 
         ClearAll();
 
-        panelRect.DOScale(Vector3.one, scaleDuration).SetEase(Ease.OutBack);
-        if (canvasGroup != null) canvasGroup.DOFade(1f, fadeInDuration);
+        DOVirtual.DelayedCall(zoomDuration * 0.8f, () =>
+        {
+            panelRect.DOScale(_originalScale, scaleDuration).SetEase(Ease.OutBack);
+            if (canvasGroup != null) canvasGroup.DOFade(1f, fadeInDuration);
+        }); if (canvasGroup != null) canvasGroup.DOFade(1f, fadeInDuration);
 
         if (_animCoroutine != null) StopCoroutine(_animCoroutine);
         _animCoroutine = StartCoroutine(AnimateContent(data));
@@ -99,6 +114,7 @@ public class UIAnimator : MonoBehaviour
         if (!_isVisible) return;
         _isVisible = false;
 
+        ZoomOut();
         if (_animCoroutine != null) StopCoroutine(_animCoroutine);
 
         panelRect.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
@@ -110,6 +126,50 @@ public class UIAnimator : MonoBehaviour
         // Hide treatment button too
         if (startTreatmentButton != null)
             startTreatmentButton.Hide();
+    }
+
+    void ZoomIn()
+    {
+        if (xrOrigin == null || viewPoint == null || _isZoomed) return;
+        _isZoomed = true;
+
+        _originStartPos = xrOrigin.position;
+        _originStartRot = xrOrigin.rotation;
+
+        // Find the actual camera inside XR Origin
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            // Calculate offset between XR Origin and camera
+            Vector3 cameraOffset = xrOrigin.position - cam.transform.position;
+
+            // Move origin so CAMERA lands at viewPoint, not origin
+            float pullBackDistance = 0.5f; // increase this to stop further away
+            Vector3 targetPos = viewPoint.position + cameraOffset
+                              + (viewPoint.forward * -pullBackDistance);
+
+            xrOrigin.DOKill();
+            xrOrigin.DOMove(targetPos, zoomDuration).SetEase(zoomEase);
+            xrOrigin.DORotateQuaternion(viewPoint.rotation, zoomDuration).SetEase(zoomEase);
+        }
+        else
+        {
+            // Fallback if no camera found
+            xrOrigin.DOMove(viewPoint.position, zoomDuration).SetEase(zoomEase);
+            xrOrigin.DORotateQuaternion(viewPoint.rotation, zoomDuration).SetEase(zoomEase);
+        }
+    }
+
+    void ZoomOut()
+    {
+        if (!_isZoomed) return;
+        _isZoomed = false;
+
+        xrOrigin.DOKill();
+        xrOrigin.DOMove(_originStartPos, returnDuration)
+                .SetEase(returnEase);
+        xrOrigin.DORotateQuaternion(_originStartRot, returnDuration)
+                .SetEase(returnEase);
     }
 
     // Called by LeaderLineController every LateUpdate

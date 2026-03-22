@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c08442c47dd6244b99824e1db4ab624, type: 3}
+  m_Name: ThirdDegreeBurn
+  m_EditorClassIdentifier: 
+  burnDegree: Third Degree
+  burnCause: Prolonged Fire / Electrical / Chemical
+  whatItLooks: White, brown or black skin. Leathery dry texture. Possible charring.
+  causes: House fires, electrical accidents, prolonged chemical exposure.
+  symptoms: No pain due to nerve damage. Charring visible. Skin looks waxy.
+  emergency: Always call 999 immediately. Do not attempt to treat alone.
+  annotations: []
+  treatmentSteps:
+  - title: Call 999
+    instruction: 'Instruction: "Press the emergency button to call for help immediately'
+    stepType: 4
+  - title: Do not remove clothing
+    instruction: Leave all clothing in place. Removing it causes further damage
+    stepType: 5
+  - title: Cover Loosely
+    instruction: Cover loosely with cling film. Do NOT apply water to this burn.
+    stepType: 6
+  decalMaterial: {fileID: 0}
+  requiresImmediate999: 1

@@ -121,7 +121,7 @@ public class StartTreatmentButton : MonoBehaviour
             takeToSinkPanel.SetActive(false);
 
         // Show the new treatment panel with all 3 steps
-        TreatmentManager.Instance?.BeginTreatment();
+        TrainingManager.Instance?.StartTreatmentPhase();
     }
 
     // Hover effects for VR pointer
