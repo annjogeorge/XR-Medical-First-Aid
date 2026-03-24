@@ -22,6 +22,7 @@ public class TapTrigger : MonoBehaviour
             //patientAnimator.SetTrigger("StartHeal");
             handleAnimator.SetTrigger("TurnTap");
             isWaterOn = true;
+            TreatmentManager.Instance.ghostHand?.Hide();
             TreatmentManager manager = FindObjectOfType<TreatmentManager>();
             if (manager != null)
             {

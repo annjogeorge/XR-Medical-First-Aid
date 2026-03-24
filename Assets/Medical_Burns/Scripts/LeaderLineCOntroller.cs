@@ -13,7 +13,9 @@ public class LeaderLineController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (burnZoneData == null || uiAnimator == null) return;
-        uiAnimator.UpdateLeaderLines(burnZoneData);
+        if (uiAnimator == null) return;
+
+        // Use the SAME data the UI is using
+        uiAnimator.UpdateLeaderLines(uiAnimator.GetCurrentData());
     }
 }

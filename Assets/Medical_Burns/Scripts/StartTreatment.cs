@@ -140,4 +140,10 @@ public class StartTreatmentButton : MonoBehaviour
 
         transform.DOScale(Vector3.one, 0.15f);
     }
+
+    void OnClicked()
+    {
+        Hide();
+        FindObjectOfType<UIAnimator>().OnTreatmentComplete();
+    }
 }

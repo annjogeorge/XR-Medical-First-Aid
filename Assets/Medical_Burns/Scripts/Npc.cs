@@ -13,14 +13,14 @@ public class NPCHandGuide : MonoBehaviour
     public Transform npcHand;
     public Transform tapZone;
     public float movementSpeed = 1.5f;
-    public float successRadius = 0.2f;
+    public float successRadius = 0.4f;
 
     [Header("Spine Setup")]
     public Transform spineTarget;
     public Transform npcSpine;
-    public float maxSpineLean = 0.15f;
-    public float spineBendStartDistance = 1.5f;
-    public float spineTiltAngle = 20f; // ← was missing, now exposed in Inspector
+    public float maxSpineLean = 0.3f;
+    public float spineBendStartDistance = 2f;
+    public float spineTiltAngle = 30f; // ← was missing, now exposed in Inspector
 
     [Header("Spine Rigging")]
     public MultiParentConstraint spineConstraint;

@@ -44,13 +44,8 @@ public class UIAnimator : MonoBehaviour
     [Header("Treatment Button")]
     public StartTreatmentButton startTreatmentButton;
 
-    [Header("Colors")]
-    public Color panelColor = new Color(0.97f, 0.97f, 0.97f, 0.95f);
-    public Color headerColor = new Color(0.10f, 0.10f, 0.10f, 1.00f);
-    public Color subTextColor = new Color(0.35f, 0.35f, 0.35f, 1.00f);
-    public Color bodyTextColor = new Color(0.20f, 0.20f, 0.20f, 1.00f);
-    public Color bulletColor = new Color(0.80f, 0.10f, 0.10f, 1.00f);
-    public Color lineColor = new Color(0.80f, 0.10f, 0.10f, 0.90f);
+    [Header("Completion")]
+    public GameObject completionPanel;
 
     [Header("Animation")]
     public float fadeInDuration = 0.3f;
@@ -84,7 +79,7 @@ public class UIAnimator : MonoBehaviour
         _isVisible = true;
         _currentData = data;
 
-
+        Debug.Log("Annotations count: " + data.annotations.Count);
         ZoomIn();
 
         if (degreeText != null) degreeText.text = data.burnDegree.ToUpper() + " BURN";
@@ -148,9 +143,15 @@ public class UIAnimator : MonoBehaviour
             Vector3 targetPos = viewPoint.position + cameraOffset
                               + (viewPoint.forward * -pullBackDistance);
 
+            Quaternion levelRotation = Quaternion.Euler(
+           0f,                           // X: no tilt
+           viewPoint.eulerAngles.y,      // Y: face panel direction
+           0f                            // Z: no roll
+       );
+
             xrOrigin.DOKill();
             xrOrigin.DOMove(targetPos, zoomDuration).SetEase(zoomEase);
-            xrOrigin.DORotateQuaternion(viewPoint.rotation, zoomDuration).SetEase(zoomEase);
+            xrOrigin.DORotateQuaternion(levelRotation, zoomDuration).SetEase(zoomEase);
         }
         else
         {
@@ -172,6 +173,10 @@ public class UIAnimator : MonoBehaviour
                 .SetEase(returnEase);
     }
 
+    public BurnZoneData GetCurrentData()
+    {
+        return _currentData;
+    }
     // Called by LeaderLineController every LateUpdate
     // Each line: burn annotation point → its own characteristic row
     public void UpdateLeaderLines(BurnZoneData data)
@@ -204,7 +209,7 @@ public class UIAnimator : MonoBehaviour
     IEnumerator AnimateContent(BurnZoneData data)
     {
         yield return new WaitForSeconds(0.3f);
-
+        Debug.Log("Artertrtret: " );
         // Type out description
         if (descriptionText != null)
         {
@@ -237,14 +242,10 @@ public class UIAnimator : MonoBehaviour
 
         GameObject row = Instantiate(characteristicRowPrefab, characteristicsContainer);
 
+        // FIX: actually set the label text
         TextMeshProUGUI text = row.GetComponentInChildren<TextMeshProUGUI>();
-        if (text != null)
-        {
-            text.color = bodyTextColor;
-            text.text = $"<color=#{ColorUtility.ToHtmlStringRGB(bulletColor)}>●</color>  {label}";
-        }
+        if (text != null) text.text = label;
 
-        // Slide in from left
         RectTransform rt = row.GetComponent<RectTransform>();
         if (rt != null)
         {
@@ -254,7 +255,11 @@ public class UIAnimator : MonoBehaviour
 
         return rt;
     }
-
+    public void OnTreatmentComplete()
+    {
+        if (completionPanel != null)
+            completionPanel.SetActive(true);
+    }
     LineRenderer SpawnLine()
     {
         if (leaderLinePrefab == null) return null;
@@ -268,8 +273,7 @@ public class UIAnimator : MonoBehaviour
             lr.startWidth = 0.0015f;
             lr.endWidth = 0.0005f;
             lr.material = new Material(Shader.Find("Sprites/Default"));
-            lr.startColor = lineColor;
-            lr.endColor = new Color(lineColor.r, lineColor.g, lineColor.b, 0.15f);
+            
             lr.SetPosition(0, Vector3.zero);
             lr.SetPosition(1, Vector3.zero);
         }

@@ -14,8 +14,24 @@ public class CompletionUI : MonoBehaviour
     public TextMeshProUGUI summaryText;
     public GameObject tryAnotherButton;
 
+    [Header("Animation")]
+    public CanvasGroup canvasGroup;
+
     private Vector3 _originalScale;
 
+    [Header("Quiz")]
+    public QuizPanel quizPanel;
+    public QuizQuestion[] allQuestions;
+
+    public void OnTryQuizClicked()
+    {
+        // hide completion panel
+        canvasGroup.DOFade(0f, 0.2f).OnComplete(() =>
+            gameObject.SetActive(false));
+
+        // launch quiz
+        quizPanel.StartQuiz(allQuestions);
+    }
     void Awake()
     {
         _originalScale = transform.localScale;

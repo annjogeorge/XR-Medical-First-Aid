@@ -13,6 +13,8 @@ public class BandageWrap : MonoBehaviour
     public float timeBetweenStrips = 0.5f; // Half-second delay between strips
     private float lastActivationTime;
     private bool _stepComplete = false; // ← ADD THIS
+    private Coroutine _hideUICoroutine;
+
 
     [Header("WrappingUI")]
     public GameObject wrappingUIPanel;
@@ -26,20 +28,45 @@ public class BandageWrap : MonoBehaviour
     {
         if (other.CompareTag("GauzeRoll"))
         {
+            if (_hideUICoroutine != null) StopCoroutine(_hideUICoroutine);
             lastWrapPosition = other.transform.position;
             isInitialized = true;
 
-            if (wrappingUIPanel != null)
-            {
-                wrappingUIPanel.SetActive(true);
-                wrappingUIText.text = "Start Wrapping!";
-                wrapProgressFill.fillAmount = 0f;
-            }
 
-            UpdateWrapUI();
         }
     }
 
+    public void UpdateWrapUI()
+    {
+        if (bandageStrips.Length == 0) return;
+
+        float progress = (float)currentStripIndex / bandageStrips.Length;
+
+        // Show panel only after first strip is applied
+        if (currentStripIndex >= 1 && currentStripIndex < bandageStrips.Length)
+        {
+            if (wrappingUIPanel != null) wrappingUIPanel.SetActive(true);
+            if (wrapProgressFill != null) wrapProgressFill.fillAmount = progress;
+            if (wrappingUIText != null)
+                wrappingUIText.text = $"Wrapping... ({currentStripIndex}/{bandageStrips.Length})";
+        }
+        // Hide panel when all strips are done
+        else if (currentStripIndex >= bandageStrips.Length)
+        {
+            if (wrappingUIText != null) wrappingUIText.text = "Wrapping Complete!";
+            if (wrapProgressFill != null) wrapProgressFill.fillAmount = 1f;
+
+            // Small delay then hide
+            if (_hideUICoroutine != null) StopCoroutine(_hideUICoroutine);
+            _hideUICoroutine = StartCoroutine(HideUIDelayed());
+        }
+    }
+
+    IEnumerator HideUIDelayed()
+    {
+        yield return new WaitForSeconds(1.5f); // show "Complete" for 1.5s then hide
+        if (wrappingUIPanel != null) wrappingUIPanel.SetActive(false);
+    }
     private void OnTriggerStay(Collider other)
     {
         if (isInitialized && other.CompareTag("GauzeRoll") && currentStripIndex < bandageStrips.Length)
@@ -55,6 +82,9 @@ public class BandageWrap : MonoBehaviour
                 lastWrapPosition = other.transform.position;
                 lastActivationTime = Time.time; // Reset the clock
 
+                if (currentStripIndex == 1)
+                    TreatmentManager.Instance?.ghostHand?.Hide(); // ← add this
+
                 Debug.Log("Strip " + (currentStripIndex - 1) + " applied!");
 
                 UpdateWrapUI();
@@ -63,10 +93,6 @@ public class BandageWrap : MonoBehaviour
                 {
                     _stepComplete = true;
 
-                    if(wrappingUIPanel != null)
-                    {
-                        wrappingUIPanel.SetActive(false);
-                    }
                     TreatmentManager.Instance?.TryCompleteStep3();
                     Debug.Log("BANDAGE: All strips applied - step complete!");
                 }
@@ -79,35 +105,11 @@ public class BandageWrap : MonoBehaviour
         if (other.CompareTag("GauzeRoll"))
         {
             isInitialized = false;
-        }
-
-        if (wrappingUIPanel != null)
-            wrappingUIPanel.SetActive(false);
-    }
-
-    public void UpdateWrapUI()
-    {
-        if(bandageStrips.Length == 0)
-        {
-            return;
-        }
-
-        float progress = (float)currentStripIndex / bandageStrips.Length;
-        if(wrapProgressFill != null)
-        {
-            wrapProgressFill.fillAmount = progress;
-        }
-
-        if(wrappingUIText != null)
-        {
-            if (currentStripIndex < bandageStrips.Length)
-            {
-                wrappingUIText.text = $"Wrapping... ({currentStripIndex}/{bandageStrips.Length})";
-            }
-            else
-            {
-                wrappingUIText.text = "Wrapping Complete!";
-            }
+            // Only hide UI if wrapping never started
+            if (currentStripIndex == 0 && wrappingUIPanel != null)
+                wrappingUIPanel.SetActive(false);
         }
     }
+
+
 }

@@ -59,6 +59,9 @@ public class TreatmentManager : MonoBehaviour
     public Image progressBarFill;
     public TextMeshProUGUI progressLabel;
 
+    [Header("Ghost Hand")]
+    public GhostHandController ghostHand;
+
     [Header("Step Rows")]
     public TreatmentStepRow step1Row;
     public TreatmentStepRow step2Row;
@@ -99,10 +102,13 @@ public class TreatmentManager : MonoBehaviour
     // Replace BeginTreatment() with this version:
     public void BeginTreatment(BurnProfile burn)
     {
+        ghostHand?.PlayPointAtBurn();
+        HideAllDisks();
         currentBurnProfile = burn;
 
 
         int stepCount = burn.treatmentSteps.Length;
+
 
         // Hide unused rows
         step3Row?.gameObject.SetActive(stepCount >= 3);
@@ -145,6 +151,7 @@ public class TreatmentManager : MonoBehaviour
             if (treatmentCanvasGroup != null)
                 treatmentCanvasGroup.DOFade(1f, 0.3f);
         }
+
 
         step2Row?.SetLocked(true);
         step3Row?.SetLocked(true);
@@ -203,6 +210,33 @@ public class TreatmentManager : MonoBehaviour
         AdvanceToStep(4);
     }
 
+    [Header("Item Highlights")]
+    public ItemHighlight moisturizerHighlight;
+    public ItemHighlight bandageHighlight;
+    public ItemHighlight clingFilmHighlight;
+
+    void HideAllHighlights()
+    {
+        moisturizerHighlight?.HideIcon();
+        bandageHighlight?.HideIcon();
+        clingFilmHighlight?.HideIcon();
+    }
+
+    void ShowHighlightForStep(int step)
+    {
+        HideAllHighlights();
+        if (currentBurnProfile == null) return;
+
+        int index = step - 1;
+        if (index < 0 || index >= currentBurnProfile.treatmentSteps.Length) return;
+
+        switch (currentBurnProfile.treatmentSteps[index].stepType)
+        {
+            case StepType.ApplyMoisturiser: moisturizerHighlight?.ShowIcon(); break;
+            case StepType.ApplyBandage: bandageHighlight?.ShowIcon(); break;
+            case StepType.ApplyClingFilm: clingFilmHighlight?.ShowIcon(); break;
+        }
+    }
     // ── Your original cooling logic, unchanged except TryStartCooling checks currentStep
     void TryStartCooling()
     {
@@ -312,11 +346,26 @@ public class TreatmentManager : MonoBehaviour
     void AdvanceToStep(int step)
     {
         currentStep = step;
+        ShowDiskForStep(step);
+        ShowHighlightForStep(step);
         int totalSteps = currentBurnProfile?.treatmentSteps.Length ?? 3;
 
+        if (ghostHand != null && currentBurnProfile != null)
+        {
+            int index = step - 1;
+            if (index >= 0 && index < currentBurnProfile.treatmentSteps.Length)
+            {
+                var stepType = currentBurnProfile.treatmentSteps[index].stepType;
+                ghostHand.PlayForStepType(stepType);
+            }
+            else
+                ghostHand.Hide(); // ← hides when step has no ghost
+        }
         // Done when step exceeds total
         if (step > totalSteps)
         {
+            HideAllDisks();
+            HideAllHighlights();
             StartCoroutine(ShowCompletion());
             return;
         }
@@ -326,7 +375,7 @@ public class TreatmentManager : MonoBehaviour
         {
             int coolStep = GetCoolWaterStepNumber();
             bool needsSink = coolStep != -1; // has a cooling step
-            takeToSinkButton.SetActive(step == coolStep && needsSink);
+            takeToSinkButton.SetActive(step == coolStep && needsSink && !isCooling);
         }
 
         bool isThird = currentBurnProfile?.burnDegree.Contains("Third") ?? false;
@@ -356,6 +405,7 @@ public class TreatmentManager : MonoBehaviour
 
     IEnumerator ShowCompletion()
     {
+        ghostHand?.Hide();
         yield return new WaitForSeconds(0.6f);
         if (instructionText != null) instructionText.text = "";
         if (completionPanel != null)
@@ -371,5 +421,23 @@ public class TreatmentManager : MonoBehaviour
 
         TrainingManager.Instance?.OnTreatmentComplete();
 
+    }
+
+    [Header("Teleport Disks")]
+    public GameObject[] teleportDisks; // drag in order: disk1, disk2, disk3
+
+    void HideAllDisks()
+    {
+        foreach (var disk in teleportDisks)
+            if (disk != null) disk.SetActive(false);
+    }
+
+    void ShowDiskForStep(int step)
+    {
+        HideAllDisks();
+        // step is 1-indexed, array is 0-indexed
+        int index = step - 1;
+        if (index >= 0 && index < teleportDisks.Length && teleportDisks[index] != null)
+            teleportDisks[index].SetActive(true);
     }
 }

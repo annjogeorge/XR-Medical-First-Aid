@@ -21,10 +21,11 @@ MonoBehaviour:
   annotations: []
   treatmentSteps:
   - title: Cool the Burn
-    instruction: Run cool water over the burn for 10 minutes.
+    instruction: "Run cool water over the burn for 10 minutes.\nPoint at the burn
+      and press grab then turn on tap according to animation \n\n"
     stepType: 1
   - title: Apply Moisturiser
     instruction: Gently apply aloe vera or a moisturising lotion.
-    stepType: 3
+    stepType: 4
   decalMaterial: {fileID: 2100000, guid: ea80ac1c0540f8442b6be467c44b8714, type: 2}
   requiresImmediate999: 0

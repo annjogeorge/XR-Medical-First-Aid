@@ -47,6 +47,7 @@ public enum StepType
     RemoveWatch,
     CoolWater,
     ApplyBandage,
+    ApplyClingFilm,
     ApplyMoisturiser,
     Call999,
     DoNotRemoveClothing,

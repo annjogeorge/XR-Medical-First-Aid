@@ -21,13 +21,13 @@ MonoBehaviour:
   annotations: []
   treatmentSteps:
   - title: Call 999
-    instruction: 'Instruction: "Press the emergency button to call for help immediately'
-    stepType: 4
+    instruction: 'Call emergency services immediately '
+    stepType: 5
   - title: Do not remove clothing
     instruction: Leave all clothing in place. Removing it causes further damage
-    stepType: 5
+    stepType: 6
   - title: Cover Loosely
     instruction: Cover loosely with cling film. Do NOT apply water to this burn.
-    stepType: 6
+    stepType: 7
   decalMaterial: {fileID: 0}
   requiresImmediate999: 1

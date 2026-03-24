@@ -24,10 +24,14 @@ MonoBehaviour:
     instruction: Remove any watches or jewellery near the burn
     stepType: 0
   - title: Cool the Burn
-    instruction: Run cool water over the burn for 20 minutes
+    instruction: 'Run cool water over the burn for 20 minutes.
+
+      Point at the
+      burn and press grab then turn on tap according to animation'
     stepType: 1
   - title: Cover the Burn
-    instruction: Pick up the bandage and wrap around the burn
-    stepType: 6
+    instruction: Pick up the bandage and wrap around the burn.Look around for bandage
+      and follow animation
+    stepType: 7
   decalMaterial: {fileID: 2100000, guid: 3c4422f2b4d12a64384b2fd734ab9a56, type: 2}
   requiresImmediate999: 0

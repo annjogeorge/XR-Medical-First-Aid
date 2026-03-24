@@ -19,19 +19,24 @@ public class BurnZoneData : MonoBehaviour
 
     [Header("Characteristics with Anchor Points")]
     [Tooltip("Each entry is a characteristic label + the world position on the burn it points to")]
-    public List<BurnAnnotation> annotations = new List<BurnAnnotation>()
-    {
-        new BurnAnnotation { label = "Blistering",        localOffset = new Vector3( 0.01f,  0.01f, 0f) },
-        new BurnAnnotation { label = "Redness",           localOffset = new Vector3(-0.01f,  0.00f, 0f) },
-        new BurnAnnotation { label = "Moist Appearance",  localOffset = new Vector3( 0.00f, -0.01f, 0f) },
-        new BurnAnnotation { label = "Pain Present",      localOffset = new Vector3( 0.02f, -0.01f, 0f) },
-    };
+    public List<BurnAnnotation> annotations;
 
     [Header("Decal Highlight")]
     public DecalProjector burnDecal;
     public float highlightOpacity = 1f;
     public float defaultOpacity = 0.85f;
     public float fadeDuration = 0.3f;
+    void Awake()
+    {
+        if (annotations == null)
+        {
+            Debug.LogError("ANNOTATIONS IS NULL at Awake!");
+        }
+        else
+        {
+            Debug.Log("Annotations at Awake: " + annotations.Count);
+        }
+    }
 
     void Start()
     {

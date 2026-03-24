@@ -50,6 +50,16 @@ public class BurnInspectionRaycast : MonoBehaviour
 
             BurnZoneData burnData = hit.collider.GetComponent<BurnZoneData>();
 
+            Debug.Log("Hit collider: " + hit.collider.name);
+
+            BurnZoneData[] all = hit.collider.GetComponentsInParent<BurnZoneData>();
+
+            foreach (var b in all)
+            {
+                Debug.Log("Found BurnZoneData on: " + b.gameObject.name +
+                          " | Annotations: " + (b.annotations == null ? "NULL" : b.annotations.Count.ToString()));
+            }
+
             if (burnData != null)
             {
                 Debug.Log("BURN SYSTEM: BurnZoneData FOUND - filling reticle");
