@@ -1,23 +1,33 @@
 using UnityEngine;
-using TMPro; 
+using TMPro;
+using UnityEngine.Rendering.Universal;
 
 public class WoundTreatment : MonoBehaviour
 {
-    [Header("Visual Elements")]
-    public GameObject bloodDecal;
-    public GameObject bandageObject;
-    public TextMeshProUGUI instructionText; // Drag your TextMeshPro object here
+    [Header("Decal Projectors")]
+    public DecalProjector woundDecal;     // wound decal
+    public GameObject bandaidDecal;       // bandaid decal object
 
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip splashSound;
+    [Header("UI")]
+    public TextMeshProUGUI instructionText;
 
-    private int step = 0; 
+    private Material woundMaterial;
+    private int step = 0;
 
-    private void Start()
+    void Start()
     {
-        if (bandageObject != null) bandageObject.SetActive(false);
-        instructionText.text = "Step 1: Apply firm pressure with Gauze.";
+        instructionText.text = "Step 1: Use Gauze to soak the wound.";
+
+        // Get and instance material so we can modify it
+        if (woundDecal != null)
+        {
+            woundMaterial = Instantiate(woundDecal.material);
+            woundDecal.material = woundMaterial;
+        }
+
+        // Hide bandaid initially
+        if (bandaidDecal != null)
+            bandaidDecal.SetActive(false);
     }
 
     void OnTriggerEnter(Collider other)
@@ -25,62 +35,63 @@ public class WoundTreatment : MonoBehaviour
         // STEP 1: GAUZE
         if (other.CompareTag("Gauze") && step == 0)
         {
-            instructionText.text = "Holding pressure...";
-            Invoke("StopBleeding", 3.0f); 
+            FadeWound(0.7f); // slight fade
+            step = 1;
+            instructionText.text = "Step 2: Clean with Water.";
         }
+
         // STEP 2: WATER
         else if (other.CompareTag("Water") && step == 1)
         {
-            CleanWound();
-            PlaySound(splashSound);
+            FadeWound(0.4f); // more fade
+            step = 2;
+            instructionText.text = "Step 3: Apply Ointment.";
         }
+
         // STEP 3: OINTMENT
         else if (other.CompareTag("Ointment") && step == 2)
         {
-            ApplyOintment();
+            FadeWound(0.2f); // almost gone
+            step = 3;
+            instructionText.text = "Step 4: Apply Bandaid.";
         }
-        // STEP 4: BANDAGE
-        else if (other.CompareTag("BandageRoll") && step == 3)
+
+        // STEP 4: BANDAID
+        else if (other.CompareTag("Bandaid") && step == 3)
         {
-            FinishTreatment();
+            ApplyBandaid(other);
+        }
+
+        else
+        {
+            instructionText.text = "Wrong step! Follow the correct order.";
         }
     }
 
-    void StopBleeding()
+    // 🎨 Fade decal using URP BaseColor
+    void FadeWound(float alpha)
     {
-        Renderer rend = bloodDecal.GetComponent<Renderer>();
-        if (rend != null) rend.material.color = new Color(0.3f, 0, 0);
-        step = 1;
-        instructionText.text = "Step 2: Rinse the wound with Water.";
-    }
-
-    void CleanWound()
-    {
-        Renderer rend = bloodDecal.GetComponent<Renderer>();
-        if (rend != null) {
-            Color c = rend.material.color;
-            c.a = 0.3f;
-            rend.material.color = c;
+        if (woundMaterial != null)
+        {
+            woundMaterial.SetColor("_BaseColor", new Color(1, 1, 1, alpha));
         }
-        step = 2;
-        instructionText.text = "Step 3: Apply Ointment to protect the area.";
     }
 
-    void ApplyOintment()
+    // 🩹 Final Step
+    void ApplyBandaid(Collider other)
     {
-        step = 3;
-        instructionText.text = "Step 4: Cover with a sterile Bandage.";
-    }
+        // Hide wound completely
+        if (woundDecal != null)
+            woundDecal.gameObject.SetActive(false);
 
-    void FinishTreatment()
-    {
-        bloodDecal.SetActive(false);
-        bandageObject.SetActive(true);
+        // Show bandaid decal
+        if (bandaidDecal != null)
+            bandaidDecal.SetActive(true);
+
+        // Remove bandaid from kit
+        Destroy(other.gameObject);
+
         step = 4;
         instructionText.text = "Treatment Complete! Great job.";
-    }
-
-    void PlaySound(AudioClip clip) {
-        if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
     }
 }

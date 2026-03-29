@@ -12,6 +12,8 @@ TagManager:
   - Gauze
   - Ointment
   - BandageRoll
+  - Band-Aid
+  - Bandaid
   layers:
   - Default
   - TransparentFX
