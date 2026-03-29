@@ -49,6 +49,18 @@ public class NPCHandGuide : MonoBehaviour
 
     void OnGrabbed(SelectEnterEventArgs args)
     {
+        if (TrainingManager.Instance?.currentPhase != TrainingPhase.Treatment) return;
+
+        var profile = TreatmentManager.Instance?.currentBurnProfile;
+        if (profile == null) return;
+
+        int coolStep = -1;
+        for (int i = 0; i < profile.treatmentSteps.Length; i++)
+            if (profile.treatmentSteps[i].stepType == StepType.CoolWater)
+                coolStep = i + 1;
+
+        if (TreatmentManager.Instance?.currentStep != coolStep) return;
+
         if (!isMovingToTap)
         {
             ikTarget.position = npcHand.position;

@@ -18,7 +18,15 @@ MonoBehaviour:
   causes: House fires, electrical accidents, prolonged chemical exposure.
   symptoms: No pain due to nerve damage. Charring visible. Skin looks waxy.
   emergency: Always call 999 immediately. Do not attempt to treat alone.
-  annotations: []
+  annotations:
+  - label: Charred skin
+    localOffset: {x: 0, y: 0.01, z: 0}
+  - label: No Pain Felt
+    localOffset: {x: 0.02, y: 0.01, z: 0}
+  - label: White or black
+    localOffset: {x: -0.02, y: 0.01, z: 0}
+  - label: Skin Destruction
+    localOffset: {x: 0, y: 0.01, z: 0.02}
   treatmentSteps:
   - title: Call 999
     instruction: 'Call emergency services immediately '
@@ -28,6 +36,6 @@ MonoBehaviour:
     stepType: 6
   - title: Cover Loosely
     instruction: Cover loosely with cling film. Do NOT apply water to this burn.
-    stepType: 7
-  decalMaterial: {fileID: 0}
+    stepType: 3
+  decalMaterial: {fileID: 2100000, guid: cbffb9252ec8d824bb1271f9f3341117, type: 2}
   requiresImmediate999: 1

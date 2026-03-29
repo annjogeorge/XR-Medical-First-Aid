@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Attach to: TrainingManager GameObject
@@ -9,6 +10,7 @@ using DG.Tweening;
 public class TrainingManager : MonoBehaviour
 {
     public static TrainingManager Instance { get; private set; }
+
 
     [Header("Burn Profiles")]
     public BurnProfile[] burnProfiles; // Assign all 3 in Inspector
@@ -32,8 +34,12 @@ public class TrainingManager : MonoBehaviour
         Instance = this;
     }
 
+    
+
     void Start()
     {
+  
+
         if (educationPanel != null) educationPanel.SetActive(false);
         if (treatmentPanel != null) treatmentPanel.SetActive(false);
         if (completionPanel != null) completionPanel.SetActive(false);
@@ -76,23 +82,18 @@ public class TrainingManager : MonoBehaviour
         completionUI?.Show(currentBurn);
 
         if (completionPanel != null) completionPanel.SetActive(true);
+
+
     }
 
     // ─── Called by CompletionUI Try Another button ────────────────────────────
 
     public void ReturnToMenu()
     {
-        TreatmentManager.Instance?.ResetTreatment();
-
-        if (educationPanel != null) educationPanel.SetActive(false);
-        if (treatmentPanel != null) treatmentPanel.SetActive(false);
-        if (completionPanel != null) completionPanel.SetActive(false);
-
-        currentPhase = TrainingPhase.Idle;
-        currentBurn = null;
-
-        MainMenuManager.Instance?.ShowMenu();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+
 
     // ─── Internal ─────────────────────────────────────────────────────────────
 
@@ -105,14 +106,7 @@ public class TrainingManager : MonoBehaviour
     void ApplyBurnZoneData()
     {
         if (burnZoneData == null || currentBurn == null) return;
-
-        burnZoneData.burnDegree = currentBurn.burnDegree;
-        burnZoneData.burnCause = currentBurn.burnCause;
-        burnZoneData.burnDescription = currentBurn.whatItLooks;
-
-        burnZoneData.annotations.Clear();
-        foreach (var a in currentBurn.annotations)
-            burnZoneData.annotations.Add(a);
+        burnZoneData.ApplyFromProfile(currentBurn);
     }
 }
 

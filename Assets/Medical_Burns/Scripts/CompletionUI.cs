@@ -22,6 +22,7 @@ public class CompletionUI : MonoBehaviour
     [Header("Quiz")]
     public QuizPanel quizPanel;
     public QuizQuestion[] allQuestions;
+    public GameObject tryQuizButton;
 
     public void OnTryQuizClicked()
     {
@@ -59,6 +60,15 @@ public class CompletionUI : MonoBehaviour
                 tryAnotherButton.transform.DOScale(Vector3.one, 0.3f)
                                     .SetEase(Ease.OutBack);
             });
+
+            if (tryQuizButton != null)
+            {
+                tryQuizButton.SetActive(true);
+                tryQuizButton.transform.localScale = Vector3.zero;
+                tryQuizButton.transform.DOScale(Vector3.one, 0.3f)
+                    .SetEase(Ease.OutBack)
+                    .SetDelay(0.15f); // slight delay after tryAnother button
+            }
         }
     }
 

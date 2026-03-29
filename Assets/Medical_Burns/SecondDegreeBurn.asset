@@ -18,7 +18,15 @@ MonoBehaviour:
   causes: Scalding water, flames, chemical contact.
   symptoms: Severe pain, swelling, fluid-filled blisters.
   emergency: Call 999 if larger than the palm of your hand.
-  annotations: []
+  annotations:
+  - label: Blistering
+    localOffset: {x: 0, y: -0.05, z: -0.1}
+  - label: Redness
+    localOffset: {x: -0.01, y: 0, z: -0.1}
+  - label: Moist Appearance
+    localOffset: {x: 0, y: 0.03, z: -0.1}
+  - label: Pain Present
+    localOffset: {x: 0.03, y: 0.02, z: -0.1}
   treatmentSteps:
   - title: Remove Accessories
     instruction: Remove any watches or jewellery near the burn
@@ -32,6 +40,6 @@ MonoBehaviour:
   - title: Cover the Burn
     instruction: Pick up the bandage and wrap around the burn.Look around for bandage
       and follow animation
-    stepType: 7
+    stepType: 2
   decalMaterial: {fileID: 2100000, guid: 3c4422f2b4d12a64384b2fd734ab9a56, type: 2}
   requiresImmediate999: 0

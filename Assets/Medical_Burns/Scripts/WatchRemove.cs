@@ -18,6 +18,8 @@ public class WatchRemove : MonoBehaviour
     void OnClicked(SelectEnterEventArgs args)
     {
         // Hide the clothing
+        if (TrainingManager.Instance?.currentPhase != TrainingPhase.Treatment) return;
+        if (TreatmentManager.Instance?.currentStep != 1) return;
         gameObject.SetActive(false);
         TreatmentManager.Instance?.TryCompleteStep1();
 

@@ -67,6 +67,7 @@ public class TreatmentManager : MonoBehaviour
     public TreatmentStepRow step2Row;
     public TreatmentStepRow step3Row;
 
+
     [Header("Instruction Text")]
     public TextMeshProUGUI instructionText;
 
@@ -84,6 +85,8 @@ public class TreatmentManager : MonoBehaviour
     [Header("Cooling Timer")]
     public TextMeshProUGUI coolingTimerText;
 
+
+
     public Color completeColor = new Color(0.20f, 0.70f, 0.30f, 1f);
 
     private string[] _instructions = new string[4];
@@ -92,7 +95,11 @@ public class TreatmentManager : MonoBehaviour
     {
         Instance = this;
         if (completionPanel != null) completionPanel.SetActive(false);
-        if (treatmentPanel != null) treatmentPanel.SetActive(false);
+        if (treatmentPanel != null)
+        {
+            Debug.Log("Awake disabling: " + treatmentPanel.name); // ← check this log
+            treatmentPanel.SetActive(false);
+        }
     }
 
     // ADD THESE METHODS to your existing TreatmentManager.cs
@@ -102,9 +109,13 @@ public class TreatmentManager : MonoBehaviour
     // Replace BeginTreatment() with this version:
     public void BeginTreatment(BurnProfile burn)
     {
+        if (takeToSinkButton != null) takeToSinkButton.SetActive(false);
+
+
         ghostHand?.PlayPointAtBurn();
         HideAllDisks();
         currentBurnProfile = burn;
+
 
 
         int stepCount = burn.treatmentSteps.Length;
@@ -158,33 +169,7 @@ public class TreatmentManager : MonoBehaviour
         AdvanceToStep(1);
     }
 
-    // Add this new ResetTreatment method:
-    public void ResetTreatment()
-    {
-        currentStep = 0;
-        currentCoolingTime = 0f;
-        isCooling = false;
-        coolingComplete = false;
-        _handInPosition = false;
-        _waterOn = false;
-        if (call999Button != null) call999Button.SetActive(false);
-        if (confirmNoClothingButton != null) confirmNoClothingButton.SetActive(false);
-        step1Row?.SetLocked(false);
-        step2Row?.SetLocked(true);
-        step3Row?.SetLocked(true);
-
-        if (progressBarFill != null) progressBarFill.fillAmount = 0f;
-        if (progressLabel != null) progressLabel.text = "Step 1 of 3";
-        if (instructionText != null) instructionText.text = "";
-        if (treatmentPanel != null) treatmentPanel.SetActive(false);
-        if (completionPanel != null) completionPanel.SetActive(false);
-        if (coolingTimerText != null) coolingTimerText.gameObject.SetActive(false);
-
-        Debug.Log("TREATMENT: Reset complete");
-    }
-
-    // At the end of ShowCompletion coroutine, add:
-    // TrainingManager.Instance?.OnTreatmentComplete();
+  
 
     public void TryCompleteStep1()
     {
@@ -264,6 +249,7 @@ public class TreatmentManager : MonoBehaviour
     {
         Debug.Log("=== COOLING STARTED ===");
         isCooling = true;
+        if (takeToSinkButton != null) takeToSinkButton.SetActive(false);
         if (waterParticles != null) waterParticles.SetActive(true);
         StartCoroutine(CoolingProcess());
     }
@@ -370,12 +356,14 @@ public class TreatmentManager : MonoBehaviour
             return;
         }
 
-        // Only show sink button for burns that need cooling
         if (takeToSinkButton != null)
         {
             int coolStep = GetCoolWaterStepNumber();
-            bool needsSink = coolStep != -1; // has a cooling step
-            takeToSinkButton.SetActive(step == coolStep && needsSink && !isCooling);
+            bool needsSink = coolStep != -1;
+            bool shouldShow = step == coolStep && needsSink && !isCooling && !coolingComplete;
+            takeToSinkButton.SetActive(shouldShow);
+
+        
         }
 
         bool isThird = currentBurnProfile?.burnDegree.Contains("Third") ?? false;
@@ -435,9 +423,15 @@ public class TreatmentManager : MonoBehaviour
     void ShowDiskForStep(int step)
     {
         HideAllDisks();
-        // step is 1-indexed, array is 0-indexed
         int index = step - 1;
+        Debug.Log($"ShowDiskForStep — step:{step} index:{index} diskCount:{teleportDisks.Length}");
+
         if (index >= 0 && index < teleportDisks.Length && teleportDisks[index] != null)
+        {
             teleportDisks[index].SetActive(true);
+            Debug.Log($"Activated disk: {teleportDisks[index].name}");
+        }
+        else
+            Debug.Log("No disk activated — index out of range or disk is null");
     }
 }

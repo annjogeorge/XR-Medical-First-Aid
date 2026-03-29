@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
@@ -56,6 +57,13 @@ public class MoisturiserApplicator : MonoBehaviour
         if (!_isHeld || _complete) return;
         if (!other.CompareTag(burnZoneTag)) return;
 
+        // Cancel any pending hide
+        if (_hideCoroutine != null)
+        {
+            StopCoroutine(_hideCoroutine);
+            _hideCoroutine = null;
+        }
+
         if (progressPanel != null) progressPanel.SetActive(true);
         Debug.Log("MOISTURISER: Near burn area");
     }
@@ -78,13 +86,25 @@ public class MoisturiserApplicator : MonoBehaviour
         }
     }
 
+    private Coroutine _hideCoroutine;
+
     public void OnBurnExit(Collider other)
     {
         if (!other.CompareTag(burnZoneTag)) return;
         _holdTimer = 0f;
         UpdateProgressUI(0f);
+
+        // Small delay before hiding so brief exits don't flicker
+        if (_hideCoroutine != null) StopCoroutine(_hideCoroutine);
+        _hideCoroutine = StartCoroutine(HidePanelDelayed());
+
+        Debug.Log("MOISTURISER: Left burn area — timer reset");
+    }
+
+    IEnumerator HidePanelDelayed()
+    {
+        yield return new WaitForSeconds(0.5f); // 0.5s grace period
         if (progressPanel != null) progressPanel.SetActive(false);
-        Debug.Log("MOISTURISER: Left burn area � timer reset");
     }
 
     void OnApplied()
@@ -118,6 +138,13 @@ public class MoisturiserApplicator : MonoBehaviour
         return 2; // fallback
     }
 
+    public void ResetState()
+    {
+        _complete = false;
+        _holdTimer = 0f;
+        _isHeld = false;
+        if (progressPanel != null) progressPanel.SetActive(false);
+    }
     void UpdateProgressUI(float progress)
     {
         if (progressFill != null)

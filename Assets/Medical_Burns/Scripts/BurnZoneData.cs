@@ -3,40 +3,19 @@ using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 using System.Collections.Generic;
 
-/// <summary>
-/// Attach to: BurnZone GameObject (child of Forearm_Bone)
-/// Stores burn data and individual annotation anchor points on the burn surface
-/// </summary>
 public class BurnZoneData : MonoBehaviour
 {
-    [Header("Burn Classification")]
-    public string burnDegree = "Second Degree";
-    public string burnCause = "Thermal Contact";
-
-    [Header("Description")]
-    [TextArea(2, 5)]
-    public string burnDescription = "Second-degree burns affect both the epidermis and dermis. Characterised by blistering, redness, and significant pain response.";
-
-    [Header("Characteristics with Anchor Points")]
-    [Tooltip("Each entry is a characteristic label + the world position on the burn it points to")]
-    public List<BurnAnnotation> annotations;
+    [Header("Runtime Data — set by TrainingManager")]
+    public string burnDegree;
+    public string burnCause;
+    public string burnDescription;
+    public List<BurnAnnotation> annotations = new List<BurnAnnotation>();
 
     [Header("Decal Highlight")]
     public DecalProjector burnDecal;
     public float highlightOpacity = 1f;
     public float defaultOpacity = 0.85f;
     public float fadeDuration = 0.3f;
-    void Awake()
-    {
-        if (annotations == null)
-        {
-            Debug.LogError("ANNOTATIONS IS NULL at Awake!");
-        }
-        else
-        {
-            Debug.Log("Annotations at Awake: " + annotations.Count);
-        }
-    }
 
     void Start()
     {
@@ -44,10 +23,22 @@ public class BurnZoneData : MonoBehaviour
             burnDecal.fadeFactor = defaultOpacity;
     }
 
-    /// <summary>
-    /// Returns the world space position of an annotation point
-    /// Call this in LateUpdate to account for bone animation
-    /// </summary>
+    // Called by TrainingManager when burn is selected
+    public void ApplyFromProfile(BurnProfile profile)
+    {
+        burnDegree = profile.burnDegree;
+        burnCause = profile.burnCause;
+        burnDescription = profile.whatItLooks;
+
+        annotations.Clear();
+        foreach (var a in profile.annotations)
+            annotations.Add(new BurnAnnotation
+            {
+                label = a.label,
+                localOffset = a.localOffset
+            });
+    }
+
     public Vector3 GetAnnotationWorldPosition(int index)
     {
         if (index < 0 || index >= annotations.Count) return transform.position;
@@ -57,26 +48,27 @@ public class BurnZoneData : MonoBehaviour
     public void ActivateHighlight()
     {
         if (burnDecal == null) return;
-        DOTween.To(() => burnDecal.fadeFactor, x => burnDecal.fadeFactor = x, highlightOpacity, fadeDuration)
-            .SetEase(Ease.OutCubic);
+        DOTween.To(() => burnDecal.fadeFactor,
+            x => burnDecal.fadeFactor = x,
+            highlightOpacity, fadeDuration).SetEase(Ease.OutCubic);
     }
 
     public void DeactivateHighlight()
     {
         if (burnDecal == null) return;
-        DOTween.To(() => burnDecal.fadeFactor, x => burnDecal.fadeFactor = x, defaultOpacity, fadeDuration)
-            .SetEase(Ease.OutCubic);
+        DOTween.To(() => burnDecal.fadeFactor,
+            x => burnDecal.fadeFactor = x,
+            defaultOpacity, fadeDuration).SetEase(Ease.OutCubic);
     }
 
     void OnDrawGizmosSelected()
     {
-        // Draw each annotation anchor in the editor so you can position them
+        if (annotations == null) return;
         for (int i = 0; i < annotations.Count; i++)
         {
             Vector3 worldPos = transform.TransformPoint(annotations[i].localOffset);
             Gizmos.color = Color.cyan;
             Gizmos.DrawSphere(worldPos, 0.005f);
-
 #if UNITY_EDITOR
             UnityEditor.Handles.Label(worldPos + Vector3.up * 0.01f, annotations[i].label);
 #endif

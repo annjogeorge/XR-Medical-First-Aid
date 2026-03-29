@@ -114,7 +114,7 @@ public class ClingFilmApplicator : MonoBehaviour
         {
             for (int i = 0; i < burn.treatmentSteps.Length; i++)
             {
-                if (burn.treatmentSteps[i].stepType == StepType.CoverLoosely)
+                if (burn.treatmentSteps[i].stepType == StepType.ApplyClingFilm)
                 {
                     int step = i + 1;
                     if (step == 1) TreatmentManager.Instance?.TryCompleteStep1();
@@ -124,6 +124,13 @@ public class ClingFilmApplicator : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ResetState()
+    {
+        _complete = false;
+        _isHeld = false;
+        if (progressPanel != null) progressPanel.SetActive(false);
     }
 
     void UpdateProgressUI()

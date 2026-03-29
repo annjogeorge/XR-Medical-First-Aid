@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 411783ed7ae238c43aa9f0f2aed96c04, type: 3}
   m_Name: Q1_CoolingTime
   m_EditorClassIdentifier: 
-  category: 
-  questionText: 
-  options: []
-  correctIndex: 0
-  explanation: 
+  category: Burn Recognition
+  questionText: A patient presents with a burn that is red, very painful, and has
+    multiple fluid-filled blisters. Which classification best describes this injury?
+  options:
+  - 1st Degree
+  - 2nd Degree (Partial Thickness)
+  - 3rd Degree
+  correctIndex: 2
+  explanation: Blisters are the hallmark of 2nd-degree burns because the damage has
+    reached the dermis layer where fluid collects.

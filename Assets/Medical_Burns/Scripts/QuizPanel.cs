@@ -53,6 +53,8 @@ public class QuizPanel : MonoBehaviour
 
     public void StartQuiz(QuizQuestion[] questions)
     {
+        Debug.Log("StartQuiz called, question count: " + questions.Length);
+
         _questions = questions;
         _current = 0;
         _score = 0;

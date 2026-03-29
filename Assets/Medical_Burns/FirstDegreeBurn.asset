@@ -18,7 +18,15 @@ MonoBehaviour:
   causes: Sunburn, brief contact with hot surface or steam.
   symptoms: Sunburn, brief contact with hot surface or steam.
   emergency: Not required unless burn covers a large area of the body.
-  annotations: []
+  annotations:
+  - label: Surface redness
+    localOffset: {x: 0, y: 0.01, z: 0}
+  - label: Dry skin
+    localOffset: {x: 0.02, y: 0.01, z: 0}
+  - label: No Blistering
+    localOffset: {x: -0.02, y: 0.01, z: 0}
+  - label: Painful to touch
+    localOffset: {x: 0, y: 0.01, z: 0.02}
   treatmentSteps:
   - title: Cool the Burn
     instruction: "Run cool water over the burn for 10 minutes.\nPoint at the burn

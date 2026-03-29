@@ -242,15 +242,42 @@ public class UIAnimator : MonoBehaviour
 
         GameObject row = Instantiate(characteristicRowPrefab, characteristicsContainer);
 
-        // FIX: actually set the label text
         TextMeshProUGUI text = row.GetComponentInChildren<TextMeshProUGUI>();
-        if (text != null) text.text = label;
+        if (text != null)
+        {
+            text.text = label;
+            // Make the text "pop" against the 3D background
+            text.fontStyle = FontStyles.Bold;
+            text.outlineWidth = 0.15f;
+            text.outlineColor = Color.black;
+        }
 
         RectTransform rt = row.GetComponent<RectTransform>();
         if (rt != null)
         {
-            rt.localScale = new Vector3(0f, 1f, 1f);
-            rt.DOScaleX(1f, 0.2f).SetEase(Ease.OutCubic);
+            // --- NON-LINEAR POSITIONING ---
+            int index = _activeRows.Count;
+            float ySpacing = -45f; // Vertical gap between rows
+
+            // Push every other row further to the right (Stagger effect)
+            float xOffset = (index % 2 == 0) ? 0f : 35f;
+            float yPos = index * ySpacing;
+
+            // Set the anchored position directly
+            rt.anchoredPosition = new Vector2(xOffset, yPos);
+
+            // --- ANIMATION POP ---
+            rt.localScale = Vector3.zero;
+            // Scale up with a slight "bounce"
+            rt.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack);
+
+            // Fade in the row background if it has an Image component
+            Image bg = row.GetComponent<Image>();
+            if (bg != null)
+            {
+                bg.color = new Color(bg.color.r, bg.color.g, bg.color.b, 0f);
+                bg.DOFade(0.6f, 0.3f);
+            }
         }
 
         return rt;

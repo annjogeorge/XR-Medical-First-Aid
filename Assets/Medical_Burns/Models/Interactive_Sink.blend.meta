@@ -8,7 +8,8 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: black
-    second: {fileID: 2100000, guid: 98916483d4d6828478353b67a92df689, type: 2}
+    second: {fileID: 7922251121040759823, guid: 7560ce21394691745b11324baa997680,
+      type: 3}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
